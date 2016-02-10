@@ -27,19 +27,26 @@
 
 - name: Ensure Drupal settings.php exists.
   template:
-    src=Drupal-{{ drupal_core_version }}-settings.php
+    src=Drupal-{{ drupal_core_version }}-settings.php.j2
     dest={{ drupal_docroot_dir }}/sites/default/settings.php
     force=no
     mode=0444
-
-- name: Ensure Drupal sites directory is setup.
-  file:
-    dest={{ drupal_docroot_dir }}/sites/default
-    mode=0555
-    state=touch
 
 - name: Run Drush make if necessary.
   shell: drush make {{ drupal_root_dir }}/makefile.development -y
   args:
     chdir: '{{ drupal_docroot_dir }}'
     creates: index.php
+
+- name: Check Drupal site bootstrap phase.
+  shell: drush php-eval 'print drupal_get_bootstrap_phase();'
+  args:
+    chdir: '{{ drupal_docroot_dir }}'
+  ignore_errors: yes
+  register: drupal_bootstrap_phase
+
+- name: Run Drush site-install if necessary.
+  shell: drush site-install --account-name={{ drupal_admin_user }} --account-pass={{ drupal_admin_password }} --site-name='{{ drupal_site_name }}' --clean-url -y
+  args:
+    chdir: '{{ drupal_docroot_dir }}'
+  when: drupal_bootstrap_phase is not defined or drupal_bootstrap_phase == '7'

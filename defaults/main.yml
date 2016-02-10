@@ -3,3 +3,10 @@ drupal_environments:
   - development
   - test
   - production
+
+
+drupal_admin_user: "admin"
+
+drupal_admin_password: "admin"
+
+drupal_site_name: "Drupal Sandbox"
