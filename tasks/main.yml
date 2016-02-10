@@ -1,0 +1,45 @@
+---
+- name: Ensure Drush is installed.
+  get_url:
+    url=http://files.drush.org/drush.phar
+    dest=/usr/local/bin/drush
+    mode=0755
+    owner=root
+    group=root
+  register: drush_install
+
+#- name: Ensure Drush is initialized.
+#  shell: drush init
+#  when: drush_install is defined
+
+- name: Ensure Drush make file exists.
+  template:
+    src=makefile.{{ item }}.j2
+    dest={{ drupal_root_dir }}/makefile.{{ item }}
+  ignore_errors: yes
+  with_items: drupal_environments
+
+- name: Ensure Drupal sites directory exists.
+  file:
+    dest={{ drupal_docroot_dir }}/sites/default
+    mode=0555
+    state=directory
+
+- name: Ensure Drupal settings.php exists.
+  template:
+    src=Drupal-{{ drupal_core_version }}-settings.php
+    dest={{ drupal_docroot_dir }}/sites/default/settings.php
+    force=no
+    mode=0444
+
+- name: Ensure Drupal sites directory is setup.
+  file:
+    dest={{ drupal_docroot_dir }}/sites/default
+    mode=0555
+    state=touch
+
+- name: Run Drush make if necessary.
+  shell: drush make {{ drupal_root_dir }}/makefile.development -y
+  args:
+    chdir: '{{ drupal_docroot_dir }}'
+    creates: index.php

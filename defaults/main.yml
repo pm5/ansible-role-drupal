@@ -1,0 +1,5 @@
+---
+drupal_environments:
+  - development
+  - test
+  - production
