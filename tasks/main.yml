@@ -1,4 +1,11 @@
 ---
+# Setup/install tasks.
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
 - name: Ensure Drush is installed.
   get_url:
     url=http://files.drush.org/drush.phar
