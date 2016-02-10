@@ -42,11 +42,10 @@
   shell: drush php-eval 'print drupal_get_bootstrap_phase();'
   args:
     chdir: '{{ drupal_docroot_dir }}'
-  ignore_errors: yes
   register: drupal_bootstrap_phase
 
 - name: Run Drush site-install if necessary.
   shell: drush site-install --account-name={{ drupal_admin_user }} --account-pass={{ drupal_admin_password }} --site-name='{{ drupal_site_name }}' --clean-url -y
   args:
     chdir: '{{ drupal_docroot_dir }}'
-  when: drupal_bootstrap_phase is not defined or drupal_bootstrap_phase == '7'
+  when: drupal_bootstrap_phase != '7'
