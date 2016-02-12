@@ -6,3 +6,13 @@
   with_items:
     - mysql-client
 
+- name: Ensure required PHP packages are installed.
+  apt:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - php5-gd
+    - php5-mcrypt
+    - php5-curl
+    - php5-memcache
+    - php5-mysql

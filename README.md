@@ -1,7 +1,9 @@
 Ansible Role: Drupal
 ====================
 
-Ansible role to setup a Drupal web site following the practices on http://drupalorganised.com
+Ansible role to provision a Drupal web site.
+
+You don't really need this if you already have Drupal code and database deployed on the server.
 
 Requirements
 ------------
