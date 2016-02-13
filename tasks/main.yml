@@ -6,6 +6,12 @@
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
 
+- name: Ensure Drupal directories are present.
+  file:
+    dest={{ drupal_docroot_dir }}/sites/default/files
+    recurse=yes
+    state=directory
+
 - name: Ensure Drush is installed.
   get_url:
     url=http://files.drush.org/drush.phar
