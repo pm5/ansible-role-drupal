@@ -21,9 +21,12 @@
     group=root
   register: drush_install
 
-#- name: Ensure Drush is initialized.
-#  shell: drush init
-#  when: drush_install is defined
+- name: Ensure Drush packages are present.
+  shell: drush pm-download {{ item }}-{{ drupal_core_version }}
+  args:
+    creates: /root/.drush/{{ item }}
+  with_items:
+    - registry_rebuild
 
 - name: Ensure Drush make file exists.
   template:
