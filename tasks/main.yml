@@ -25,12 +25,7 @@
     dest={{ drupal_root_dir }}/makefile.{{ item }}
   ignore_errors: yes
   with_items: drupal_environments
-
-- name: Ensure Drupal sites directory exists.
-  file:
-    dest={{ drupal_docroot_dir }}/sites/default
-    mode=0555
-    state=directory
+  when: drupal_init
 
 - name: Ensure Drupal settings.php exists.
   template:
@@ -38,21 +33,31 @@
     dest={{ drupal_docroot_dir }}/sites/default/settings.php
     force=no
     mode=0444
+  when: drupal_init
+
+- name: Ensure Drupal sites directory permission are set.
+  file:
+    dest={{ drupal_docroot_dir }}/sites/default
+    mode=0555
+    state=directory
+  when: drupal_init
 
 - name: Run Drush make if necessary.
   shell: drush make {{ drupal_root_dir }}/makefile.development -y
   args:
     chdir: '{{ drupal_docroot_dir }}'
     creates: index.php
+  when: drupal_init
 
 - name: Check Drupal site bootstrap phase.
   shell: drush php-eval 'print drupal_get_bootstrap_phase();'
   args:
     chdir: '{{ drupal_docroot_dir }}'
   register: drupal_bootstrap_phase
+  when: drupal_init
 
 - name: Run Drush site-install if necessary.
   shell: drush site-install --account-name={{ drupal_admin_user }} --account-pass={{ drupal_admin_password }} --site-name='{{ drupal_site_name }}' --clean-url -y
   args:
     chdir: '{{ drupal_docroot_dir }}'
-  when: drupal_bootstrap_phase.stdout != '7'
+  when: drupal_init and drupal_bootstrap_phase.stdout != '7'

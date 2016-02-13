@@ -4,6 +4,8 @@ drupal_environments:
   - test
   - production
 
+drupal_init: false
+
 drupal_core_version: "7.x"
 
 drupal_admin_user: "admin"
